@@ -35,7 +35,7 @@ if (!httpServerLaunced) { WriteLine(Red($"ERROR: The static HTTP server could no
 
 WriteLine();
 WriteLine(Cyan("Reay to go!"));
-WriteLine(Yellow("Please check that the \"Fetch Data\" page ") + Red("would not work ") + Yellow("because the AP server is not running."));
+WriteLine(Yellow("Please check that the \"Fetch Data\" page works fine with the data that persisted in HTML files when the app was published, even though the AP server is no longer running."));
 Process.Start(new ProcessStartInfo("https://localhost:5001/") { UseShellExecute = true });
 
 

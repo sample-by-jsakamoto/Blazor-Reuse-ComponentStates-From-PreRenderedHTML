@@ -1,8 +1,13 @@
 ﻿@page "/fetchdata"
 @using BlazorApp1.Shared
+@using System.Text.RegularExpressions;
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 @implements IDisposable
 @inject HttpClient Http
 @inject PersistentComponentState ComponentState
+@inject NavigationManager Nav
+@inject IWebAssemblyHostEnvironment HostEnv
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -53,8 +58,36 @@ else
         {
             forecasts = restored!;
         }
+
+        // When the persisted state was not found, but currently, the app is running on a production web browser (not in a pre-rendering server process)...
+        else if (HostEnv.IsProduction())
+        {
+            // Fetch the HTML file statically rendered of the current page from a static web server.
+            // NOTICE: If you pre - rendered with the "BlazorWasmPrerenderingOutputStyle=AppendHtmlExtension" option, you should fetch the URL `uri.AbsolutePath.TrimEnd('/') + ".html"`.
+            var uri = new Uri(Nav.Uri);
+            var staticPrerenderedHTML = await Http.GetStringAsync(uri.AbsolutePath.TrimEnd('/') + "/index.html");
+
+            // Try to find the component state that is base64 encoded from inside the prerendered HTML text.
+            var componentStateFragment = Regex.Match(staticPrerenderedHTML, @"Blazor-Component-State:(?<state>[a-zA-Z0-9+/=]+)");
+            if (componentStateFragment.Success)
+            {
+                // If it is found, decode the base64 encoded state text and deserialize it since the format of the decoded text is JSON.
+                var stateBytes = Convert.FromBase64String(componentStateFragment.Groups["state"].Value);
+                var stateKeyValues = JsonSerializer.Deserialize<Dictionary<string, string>>(stateBytes);
+                if (stateKeyValues != null)
+                {
+                    if (stateKeyValues.TryGetValue(_PersistentStoreKey, out var base64Vlaue))
+                    {
+                        var valueBytes = Convert.FromBase64String(base64Vlaue);
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        forecasts = JsonSerializer.Deserialize<WeatherForecast[]>(valueBytes, options);
+                    }
+                }
+            }
+        }
         else
         {
+            // Usually, the code below will run only when the app is running on pre-rendering server or development environment.
             forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("https://localhost:7078/api/weatherforecast");
         }
     }
