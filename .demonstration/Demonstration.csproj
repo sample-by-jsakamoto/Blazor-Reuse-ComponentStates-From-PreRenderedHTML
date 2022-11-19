@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Toolbelt.AnsiEscCode.Colorize" Version="1.0.0" />
+    <PackageReference Include="Toolbelt.FileIO" Version="1.0.0" />
+    <PackageReference Include="XProcess" Version="1.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Diagnostics"/>
+    <Using Include="Toolbelt.AnsiEscCode.Colorize" Static="true" />
+    <Using Include="Toolbelt.Diagnostics.XProcess" Static="true" />
+    <Using Include="Toolbelt.FileIO" Static="true"/>
+    <Using Include="System.Console" Static="true"/>
+  </ItemGroup>
+
+</Project>
