@@ -1,4 +1,5 @@
 using BlazorApp1;
+using BlazorApp1.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -16,4 +17,5 @@ await builder.Build().RunAsync();
 static void ConfigureServices(IServiceCollection services, Uri baseAddress)
 {
     services.AddScoped(sp => new HttpClient { BaseAddress = baseAddress });
+    services.AddScoped<StaticPreRenderedComponentState>();
 }
